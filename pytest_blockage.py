@@ -25,9 +25,13 @@ def get_string_type():
         return str
 
 
+def get_host_without_port(host):
+    return host.split(':')[0]
+
+
 def block_http(whitelist):
     def whitelisted(self, host, *args, **kwargs):
-        if isinstance(host, get_string_type()) and host not in whitelist:
+        if isinstance(host, get_string_type()) and get_host_without_port(host) not in whitelist:
             logger.warning('Denied HTTP connection to: %s' % host)
             raise MockHttpCall(host)
         logger.debug('Allowed HTTP connection to: %s' % host)
@@ -43,7 +47,7 @@ def block_http(whitelist):
 
 def block_smtp(whitelist):
     def whitelisted(self, host, *args, **kwargs):
-        if isinstance(host, get_string_type()) and host not in whitelist:
+        if isinstance(host, get_string_type()) and get_host_without_port(host) not in whitelist:
             logger.warning('Denied SMTP connection to: %s' % host)
             raise MockSmtpCall(host)
         logger.debug('Allowed SMTP connection to: %s' % host)
